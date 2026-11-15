@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SuperFormica - Asesoría & Ventas | WhatsApp Assistant</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <!-- Estilos Propios -->
+    <link rel="stylesheet" href="./styles.css">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        wa: {
+                            bg: '#0B141A', panel: '#111B21', header: '#202C33', hover: '#2A3942',
+                            border: '#222D34', incoming: '#202C33', outgoing: '#005C4B',
+                            accent: '#00A884', accentHover: '#029071', textPrimary: '#E9EDEF',
+                            textSecondary: '#8696A0', blueCheck: '#53BDEB', inputBg: '#2A3942'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-wa-bg text-wa-textPrimary font-sans h-[100dvh] w-screen overflow-hidden flex flex-col select-none sm:select-auto">
+
+    <div class="flex-1 flex w-full h-full max-w-[1600px] mx-auto overflow-hidden shadow-2xl border-x border-wa-border relative">
+
+        <!-- PANEL IZQUIERDO -->
+        <aside id="sidebarPanel" class="fixed inset-y-0 left-0 z-40 w-[88%] max-w-[380px] lg:static lg:w-[390px] bg-wa-panel border-r border-wa-border flex flex-col transition-transform duration-300 ease-in-out -translate-x-full lg:translate-x-0">
+            
+            <div class="h-16 bg-wa-header px-4 flex items-center justify-between border-b border-wa-border shrink-0">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-wa-accent to-emerald-700 flex items-center justify-center font-bold text-white shadow-md text-base">
+                        SF
+                    </div>
+                    <div>
+                        <h2 class="font-semibold text-sm text-wa-textPrimary leading-tight">SuperFormica Caracas</h2>
+                        <span id="connectionBadge" class="text-[11px] text-amber-400 flex items-center gap-1">
+                            <i class="fa-solid fa-circle text-[8px]"></i> Modo Autónomo Local
+                        </span>
+                    </div>
+                </div>
+                <div class="flex items-center gap-1">
+                    <button type="button" onclick="window.appSyncBcv(true)" title="Sincronizar Tasas BCV" class="p-2.5 rounded-full text-wa-textSecondary hover:text-wa-accent hover:bg-wa-hover transition cursor-pointer">
+                        <i id="sidebarRefreshIcon" class="fa-solid fa-arrows-rotate text-xs"></i>
+                    </button>
+                    <button type="button" onclick="window.appOpenSettingsModal()" title="Configurar Tienda y Backend" class="p-2.5 rounded-full text-wa-textSecondary hover:text-wa-textPrimary hover:bg-wa-hover transition cursor-pointer">
+                        <i class="fa-solid fa-gear"></i>
+                    </button>
+                    <button type="button" onclick="window.appToggleSidebar()" class="lg:hidden p-2.5 rounded-full text-wa-textSecondary hover:text-wa-textPrimary hover:bg-wa-hover transition cursor-pointer">
+                        <i class="fa-solid fa-xmark text-lg"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Tabs Panel Lateral -->
+            <div class="grid grid-cols-2 bg-wa-panel border-b border-wa-border shrink-0 text-xs font-medium">
+                <button type="button" id="tabBtnShortcuts" onclick="window.appSwitchSidebarTab('shortcuts')" class="py-3 text-wa-textSecondary hover:text-wa-textPrimary border-b-2 border-transparent flex items-center justify-center gap-2 transition cursor-pointer">
+                    <i class="fa-solid fa-bolt"></i> Consultas Rápidas
+                </button>
+                <button type="button" id="tabBtnCart" onclick="window.appSwitchSidebarTab('cart')" class="py-3 text-wa-accent border-b-2 border-wa-accent flex items-center justify-center gap-2 transition relative cursor-pointer">
+                    <i class="fa-solid fa-calculator"></i> Cotizador
+                    <span id="cartBadge" class="bg-wa-accent text-wa-bg font-bold text-[10px] px-1.5 py-0.5 rounded-full hidden">0</span>
+                </button>
+            </div>
+
+            <!-- TAB 1: CONSULTAS RÁPIDAS -->
+            <div id="sidebarTabShortcuts" class="flex-1 overflow-y-auto p-3 space-y-2.5 hidden">
+                <div class="px-1 pt-0.5 pb-1 flex items-center justify-between">
+                    <span class="text-[11px] font-semibold uppercase tracking-wider text-wa-textSecondary">Toca para consultar al asesor</span>
+                </div>
+
+                <button type="button" onclick="window.appSendQuickPrompt('Hola, ¿qué precios y espesores tienen disponibles en láminas de MDF crudo y Melamina?')" class="w-full text-left p-3 rounded-xl bg-wa-header/70 hover:bg-wa-hover border border-wa-border/80 transition flex items-start gap-3 group cursor-pointer">
+                    <div class="w-9 h-9 rounded-lg bg-amber-500/15 text-amber-400 flex items-center justify-center shrink-0 mt-0.5"><i class="fa-solid fa-layer-group"></i></div>
+                    <div class="flex-1 min-w-0">
+                        <div class="text-sm font-medium text-wa-textPrimary truncate">Precios de MDF y Melamina</div>
+                        <p class="text-xs text-wa-textSecondary line-clamp-1">Espesores 3mm a 25mm, colores y medidas</p>
+                    </div>
+                </button>
+
+                <button type="button" onclick="window.appSendQuickPrompt('¿Cuál es la tasa Euro BCV y Dólar BCV del día y cómo quedan los precios en Bolívares?')" class="w-full text-left p-3 rounded-xl bg-wa-header/70 hover:bg-wa-hover border border-wa-border/80 transition flex items-start gap-3 group cursor-pointer">
+                    <div class="w-9 h-9 rounded-lg bg-yellow-500/15 text-yellow-300 flex items-center justify-center shrink-0 mt-0.5"><i class="fa-solid fa-euro-sign"></i></div>
+                    <div class="flex-1 min-w-0">
+                        <div class="text-sm font-medium text-wa-textPrimary truncate">Tasa Euro / Dólar BCV y Precios Bs</div>
+                        <p class="text-xs text-wa-textSecondary line-clamp-1">Cálculo actualizado a tasa oficial BCV</p>
+                    </div>
+                </button>
+
+                <button type="button" onclick="window.appSendQuickPrompt('Necesito información sobre láminas de PVC Celuka resistentes al agua para muebles de cocina o baño.')" class="w-full text-left p-3 rounded-xl bg-wa-header/70 hover:bg-wa-hover border border-wa-border/80 transition flex items-start gap-3 group cursor-pointer">
+                    <div class="w-9 h-9 rounded-lg bg-cyan-500/15 text-cyan-400 flex items-center justify-center shrink-0 mt-0.5"><i class="fa-solid fa-droplet-slash"></i></div>
+                    <div class="flex-1 min-w-0">
+                        <div class="text-sm font-medium text-wa-textPrimary truncate">Láminas PVC (Humedad)</div>
+                        <p class="text-xs text-wa-textSecondary line-clamp-1">100% hidrófugo para cocinas y baños</p>
+                    </div>
+                </button>
+
+                <button type="button" onclick="window.appSendQuickPrompt('¿Dónde están ubicados exactamente en Plaza Venezuela y cuál es su horario de atención?')" class="w-full text-left p-3 rounded-xl bg-wa-header/70 hover:bg-wa-hover border border-wa-border/80 transition flex items-start gap-3 group cursor-pointer">
+                    <div class="w-9 h-9 rounded-lg bg-rose-500/15 text-rose-400 flex items-center justify-center shrink-0 mt-0.5"><i class="fa-solid fa-map-location-dot"></i></div>
+                    <div class="flex-1 min-w-0">
+                        <div class="text-sm font-medium text-wa-textPrimary truncate">Horarios y Ubicación</div>
+                        <p class="text-xs text-wa-textSecondary line-clamp-1">Cómo llegar en Plaza Venezuela, Caracas</p>
+                    </div>
+                </button>
+
+                <div class="mt-4 p-3.5 rounded-xl bg-wa-bg/70 border border-wa-border text-xs text-wa-textSecondary space-y-1.5">
+                    <div class="font-semibold text-wa-textPrimary flex items-center gap-2">
+                        <i class="fa-solid fa-store text-wa-accent"></i> Información de Tienda
+                    </div>
+                    <p id="sidebarAddressText">Plaza Venezuela, Av. Principal / detrás de la Torre Previsora, Caracas, Venezuela.</p>
+                    <button type="button" onclick="window.appShowAddress()" class="mt-1.5 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-rose-500/15 hover:bg-rose-500/25 text-rose-300 border border-rose-500/30 text-[11px] font-medium transition cursor-pointer">
+                        <i class="fa-solid fa-location-dot"></i> Ver Dirección y Mapa
+                    </button>
+                    <p id="sidebarHoursText">Lunes a Viernes: 8:00 AM a 6:00 PM | Sábados: 8:30 AM a 3:00 PM</p>
+                </div>
+            </div>
+
+            <!-- TAB 2: COTIZADOR -->
+            <div id="sidebarTabCart" class="flex-1 flex flex-col overflow-hidden">
+                <div class="p-3 overflow-y-auto flex-1 space-y-3">
+                    <div class="flex items-center justify-between gap-2 bg-wa-bg/70 p-2 rounded-xl border border-wa-border">
+                        <span class="text-[11px] text-wa-textSecondary">Cálculo en Bs según:</span>
+                        <div class="flex items-center gap-1 bg-wa-header p-0.5 rounded-lg border border-wa-border">
+                            <button type="button" id="cartCurrencyBtnEur" onclick="window.appSetActiveCurrency('EUR')" class="px-2 py-1 rounded-md text-[10px] font-bold bg-wa-accent text-wa-bg transition cursor-pointer">EUR BCV</button>
+                            <button type="button" id="cartCurrencyBtnUsd" onclick="window.appSetActiveCurrency('USD')" class="px-2 py-1 rounded-md text-[10px] font-bold text-wa-textSecondary hover:text-white transition cursor-pointer">USD BCV</button>
+                        </div>
+                    </div>
+
+                    <div class="relative">
+                        <input type="text" id="catalogSearchInput" oninput="window.appFilterCatalog(this.value)" placeholder="Buscar producto o código..." class="w-full bg-wa-inputBg border border-wa-border rounded-xl px-3 py-1.5 text-xs text-wa-textPrimary placeholder-wa-textSecondary focus:outline-none focus:border-wa-accent">
+                    </div>
+
+                    <div id="catalogQuickAddList" class="space-y-2"></div>
+
+                    <div class="pt-3 border-t border-wa-border">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs font-semibold uppercase text-wa-textSecondary">Tu Lista de Materiales</span>
+                            <button type="button" onclick="window.appClearCart()" class="text-[11px] text-rose-400 hover:underline cursor-pointer">Vaciar</button>
+                        </div>
+                        <div id="cartItemsContainer" class="space-y-2 text-xs"></div>
+                    </div>
+                </div>
+
+                <div class="p-3.5 bg-wa-header border-t border-wa-border shrink-0 space-y-2.5">
+                    <div class="flex justify-between items-baseline text-sm">
+                        <span class="text-wa-textSecondary">Total Estimado:</span>
+                        <div class="text-right">
+                            <div id="cartTotalUsd" class="font-bold text-wa-accent text-base">$0.00 Ref.</div>
+                            <div id="cartTotalBs" class="text-[11px] text-amber-300 font-medium">Bs. 0,00</div>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button type="button" onclick="window.appSendCartToChat()" class="py-2 px-3 rounded-xl bg-wa-hover hover:bg-wa-border text-wa-textPrimary text-xs font-medium flex items-center justify-center gap-1.5 transition cursor-pointer">
+                            <i class="fa-solid fa-robot text-wa-accent"></i> Consultar IA
+                        </button>
+                        <button type="button" onclick="window.appExportWhatsApp(true)" class="py-2 px-3 rounded-xl bg-wa-accent hover:bg-wa-accentHover text-white text-xs font-semibold flex items-center justify-center gap-1.5 transition shadow-md cursor-pointer">
+                            <i class="fa-brands fa-whatsapp text-sm"></i> Pedir por WA
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <div id="sidebarBackdrop" onclick="window.appToggleSidebar()" class="fixed inset-0 bg-black/60 z-30 hidden lg:hidden backdrop-blur-xs"></div>
+
+        <!-- PANEL DE CHAT PRINCIPAL -->
+        <main class="flex-1 flex flex-col h-full wa-chat-bg relative min-w-0">
+
+            <header class="h-16 bg-wa-header px-3 sm:px-4 flex items-center justify-between border-b border-wa-border shrink-0 z-20 shadow-xs">
+                <div class="flex items-center gap-2.5 sm:gap-3 min-w-0">
+                    <button type="button" onclick="window.appToggleSidebar()" class="lg:hidden p-2 -ml-1 rounded-full text-wa-textSecondary hover:text-wa-textPrimary hover:bg-wa-hover transition cursor-pointer">
+                        <i class="fa-solid fa-bars text-lg"></i>
+                    </button>
+                    <div class="relative shrink-0 cursor-pointer" onclick="window.appToggleSidebar()">
+                        <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-emerald-700 via-wa-accent to-teal-400 flex items-center justify-center text-white font-bold text-sm shadow-inner">
+                            SF
+                        </div>
+                        <span class="absolute bottom-0 right-0 w-3 h-3 bg-[#00A884] border-2 border-wa-header rounded-full"></span>
+                    </div>
+                    <div class="min-w-0">
+                        <div class="flex items-center gap-1.5">
+                            <h1 class="font-semibold text-sm sm:text-base text-wa-textPrimary truncate">SuperFormica - Asesoría & Ventas</h1>
+                            <i class="fa-solid fa-circle-check text-wa-accent text-xs shrink-0" title="Verificado"></i>
+                        </div>
+                        <p class="text-xs text-wa-accent truncate">en línea • Plaza Venezuela, Caracas</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-1 sm:gap-2 shrink-0">
+                    <button type="button" id="autoVoiceToggleBtn" onclick="window.appToggleAutoVoice()" title="Activar/Desactivar Voz Automática" class="px-3 py-1.5 rounded-full bg-wa-bg/70 hover:bg-wa-hover border border-wa-border text-xs text-wa-textSecondary flex items-center gap-1.5 transition cursor-pointer">
+                        <i id="autoVoiceIcon" class="fa-solid fa-volume-xmark text-rose-400"></i>
+                        <span class="hidden sm:inline">Voz OFF</span>
+                    </button>
+
+                    <button type="button" onclick="window.appSyncBcv(true)" title="Actualizar tasas" class="hidden md:flex items-center gap-2 bg-wa-bg/70 hover:bg-wa-hover border border-wa-border px-2.5 py-1.5 rounded-full text-[11px] transition cursor-pointer">
+                        <span class="text-amber-300 font-semibold" id="headerEurBadge">EUR: Bs. 51,50</span>
+                        <span class="text-wa-border">|</span>
+                        <span class="text-emerald-300 font-semibold" id="headerUsdBadge">USD: Bs. 47,20</span>
+                        <i class="fa-solid fa-arrows-rotate text-wa-accent text-[10px]"></i>
+                    </button>
+                    <button type="button" onclick="window.appToggleSearchBar()" title="Buscar" class="p-2.5 rounded-full text-wa-textSecondary hover:text-wa-textPrimary hover:bg-wa-hover transition cursor-pointer">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </button>
+                    <button type="button" onclick="window.appOpenSettingsModal()" title="Configuración y Backend" class="p-2.5 rounded-full text-wa-textSecondary hover:text-wa-textPrimary hover:bg-wa-hover transition cursor-pointer">
+                        <i class="fa-solid fa-sliders"></i>
+                    </button>
+                </div>
+            </header>
+
+            <div id="chatSearchBar" class="hidden bg-wa-panel px-4 py-2 border-b border-wa-border flex items-center gap-2 z-10">
+                <div class="flex-1 bg-wa-inputBg rounded-lg px-3 py-1.5 flex items-center gap-2">
+                    <i class="fa-solid fa-magnifying-glass text-wa-textSecondary text-xs"></i>
+                    <input type="text" id="chatSearchInput" oninput="window.appFilterMessages(this.value)" placeholder="Buscar en la conversación..." class="bg-transparent text-sm text-wa-textPrimary placeholder-wa-textSecondary focus:outline-none w-full">
+                    <button type="button" onclick="window.appClearSearch()" class="text-wa-textSecondary hover:text-wa-textPrimary text-xs cursor-pointer"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+            </div>
+
+            <!-- Accesos Rápidos chat -->
+            <div class="bg-wa-panel/90 backdrop-blur-xs border-b border-wa-border px-3 py-2 flex items-center gap-2 overflow-x-auto shrink-0 no-scrollbar">
+                <button type="button" onclick="window.appSendQuickPrompt('¿Cuál es la tasa Euro BCV y Dólar BCV de hoy?')" class="shrink-0 text-xs bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 border border-amber-500/30 px-3 py-1.5 rounded-full transition font-medium flex items-center gap-1.5 cursor-pointer">
+                    <span>🇪🇺</span> Tasa EUR/USD BCV
+                </button>
+                <button type="button" onclick="window.appSendQuickPrompt('¿Precios de MDF 15mm y 18mm?')" class="shrink-0 text-xs bg-wa-header hover:bg-wa-hover text-wa-textPrimary border border-wa-border px-3 py-1.5 rounded-full transition flex items-center gap-1.5 cursor-pointer">
+                    <span>🪵</span> MDF y Melamina
+                </button>
+                <button type="button" onclick="window.appSendQuickPrompt('¿Tienen láminas PVC para cocina?')" class="shrink-0 text-xs bg-wa-header hover:bg-wa-hover text-wa-textPrimary border border-wa-border px-3 py-1.5 rounded-full transition flex items-center gap-1.5 cursor-pointer">
+                    <span>💧</span> PVC Hidrófugo
+                </button>
+                <button type="button" onclick="window.appShowAddress()" class="shrink-0 text-xs bg-rose-500/15 hover:bg-rose-500/25 text-rose-300 border border-rose-500/30 px-3 py-1.5 rounded-full transition flex items-center gap-1.5 font-medium cursor-pointer">
+                    <i class="fa-solid fa-location-dot"></i> Dirección
+                </button>
+                <button type="button" onclick="window.appOpenCartInSidebar()" class="shrink-0 text-xs bg-wa-accent/15 hover:bg-wa-accent/25 text-wa-accent border border-wa-accent/30 px-3 py-1.5 rounded-full transition flex items-center gap-1.5 font-medium cursor-pointer">
+                    <i class="fa-solid fa-cart-plus"></i> Armar Pedido
+                </button>
+            </div>
+
+            <!-- Contenedor de Mensajes -->
+            <div id="messagesContainer" class="flex-1 overflow-y-auto px-3 sm:px-6 md:px-12 py-4 space-y-3 scroll-smooth">
+                <div class="flex justify-center my-2">
+                    <div class="bg-[#182229] text-[#FFD279] text-[11px] sm:text-xs px-3.5 py-2 rounded-xl max-w-md text-center shadow-xs border border-wa-border/60">
+                        <i class="fa-solid fa-lock text-[10px] mr-1"></i>
+                        Asesoría técnica automatizada de <strong>SuperFormica Caracas</strong>. Tasas oficiales BCV sincronizadas.
+                    </div>
+                </div>
+            </div>
+
+            <div id="typingIndicator" class="px-4 sm:px-12 pb-2 hidden">
+                <div class="inline-flex items-center gap-2 bg-wa-incoming text-wa-textPrimary px-4 py-2.5 rounded-2xl bubble-incoming shadow-sm">
+                    <span class="w-2 h-2 rounded-full bg-wa-accent typing-dot"></span>
+                    <span class="w-2 h-2 rounded-full bg-wa-accent typing-dot"></span>
+                    <span class="w-2 h-2 rounded-full bg-wa-accent typing-dot"></span>
+                </div>
+            </div>
+
+            <!-- Footer Chat -->
+            <footer class="bg-wa-header px-2.5 sm:px-4 py-2.5 flex items-end gap-2 border-t border-wa-border shrink-0 z-20">
+                <button type="button" onclick="window.appOpenCartInSidebar()" title="Añadir al presupuesto" class="p-2.5 rounded-full text-wa-textSecondary hover:text-wa-textPrimary hover:bg-wa-hover transition shrink-0 mb-0.5 cursor-pointer">
+                    <i class="fa-solid fa-plus text-lg"></i>
+                </button>
+                <div class="flex-1 bg-wa-inputBg rounded-2xl px-4 py-2.5 flex items-center border border-transparent focus-within:border-wa-accent/40 transition">
+                    <textarea id="messageInput" rows="1" placeholder="Escribe tu consulta..." class="w-full bg-transparent text-sm sm:text-[15px] text-wa-textPrimary placeholder-wa-textSecondary focus:outline-none resize-none max-h-32 leading-relaxed" onkeydown="window.appHandleInputKeydown(event)" oninput="window.appAutoResize(this)"></textarea>
+                </div>
+                <button type="button" onclick="window.appSendMessage()" title="Enviar" class="w-11 h-11 rounded-full bg-wa-accent hover:bg-wa-accentHover text-white flex items-center justify-center shrink-0 transition shadow-md active:scale-95 mb-0.5 cursor-pointer">
+                    <i class="fa-solid fa-paper-plane text-sm translate-x-[-1px]"></i>
+                </button>
+            </footer>
+        </main>
+    </div>
+
+    <!-- MODAL DE CONFIGURACIÓN -->
+    <div id="settingsModal" class="fixed inset-0 z-50 bg-black/75 backdrop-blur-xs flex items-center justify-center p-4 hidden">
+        <div class="bg-wa-panel border border-wa-border rounded-2xl w-full max-w-xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden">
+            <div class="bg-wa-header px-5 py-4 flex items-center justify-between border-b border-wa-border">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-lg bg-wa-accent/20 text-wa-accent flex items-center justify-center"><i class="fa-solid fa-sliders"></i></div>
+                    <div>
+                        <h3 class="font-semibold text-base text-wa-textPrimary">Configuración de SuperFormica</h3>
+                        <p class="text-xs text-wa-textSecondary">Backend REST, API Key y Tasas BCV</p>
+                    </div>
+                </div>
+                <button type="button" onclick="window.appCloseSettingsModal()" class="p-2 rounded-full text-wa-textSecondary hover:text-wa-textPrimary hover:bg-wa-hover transition cursor-pointer"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+
+            <div class="p-5 overflow-y-auto space-y-4 text-sm">
+                <!-- URL del Backend -->
+                <div class="p-4 rounded-xl bg-wa-bg border border-wa-border space-y-2">
+                    <label class="font-semibold text-wa-textPrimary flex items-center gap-2">
+                        <i class="fa-solid fa-server text-wa-accent"></i> URL del Backend (Opcional)
+                    </label>
+                    <p class="text-xs text-wa-textSecondary">Si tienes levantado un backend (ej. <code>http://localhost:3000</code>), indícalo aquí. Si se omite, opera 100% autónomo en el navegador.</p>
+                    <input type="text" id="cfgBackendUrl" placeholder="Ej. http://localhost:3000" class="w-full bg-wa-inputBg border border-wa-border rounded-xl px-3.5 py-2.5 text-wa-textPrimary text-xs focus:outline-none focus:border-wa-accent">
+                </div>
+
+                <!-- API Key y Modelo Gemini -->
+                <div class="p-4 rounded-xl bg-wa-bg border border-wa-border space-y-3">
+                    <div class="flex items-center justify-between">
+                        <label class="font-semibold text-wa-textPrimary flex items-center gap-2">
+                            <i class="fa-solid fa-wand-magic-sparkles text-wa-accent"></i> Google AI Studio API Key
+                        </label>
+                        <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener noreferrer" class="text-xs text-wa-accent hover:underline flex items-center gap-1">
+                            <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i> Obtener clave
+                        </a>
+                    </div>
+                    <p class="text-xs text-wa-textSecondary">Pega tu API Key gratuita de Google AI Studio para pruebas locales. Borra la clave antes de subir a GitHub.</p>
+                    <div class="flex items-center gap-2">
+                        <input type="password" id="cfgApiKey" placeholder="Pega aquí tu API Key..." class="flex-1 bg-wa-inputBg border border-wa-border rounded-xl px-3.5 py-2.5 text-wa-textPrimary text-xs focus:outline-none focus:border-wa-accent">
+                        <button type="button" onclick="window.appToggleApiKeyVisibility()" class="px-3 py-2.5 rounded-xl bg-wa-header hover:bg-wa-hover border border-wa-border text-wa-textSecondary hover:text-white text-xs cursor-pointer" title="Mostrar / Ocultar clave">
+                            <i id="toggleApiKeyIcon" class="fa-solid fa-eye"></i>
+                        </button>
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-medium text-wa-textSecondary mb-1">Modelo Gemini (Nivel Gratuito)</label>
+                        <select id="cfgGeminiModel" class="w-full bg-wa-inputBg border border-wa-border rounded-xl px-3 py-2 text-wa-textPrimary text-xs font-medium focus:outline-none focus:border-wa-accent">
+                            <option value="gemini-3.5-flash-lite">gemini-3.5-flash-lite (Rápido / Gratis)</option>
+                            <option value="gemini-3.5-flash">gemini-3.5-flash (Estándar / Gratis)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Tasas BCV -->
+                <div class="p-4 rounded-xl bg-wa-bg border border-wa-border space-y-3">
+                    <div class="flex items-center justify-between gap-2">
+                        <label class="font-semibold text-wa-textPrimary flex items-center gap-2">
+                            <i class="fa-solid fa-building-columns text-amber-300"></i> Tasas Oficiales BCV (Bs)
+                        </label>
+                        <button type="button" onclick="window.appSyncBcv(true)" class="text-xs bg-wa-accent/20 hover:bg-wa-accent text-wa-accent hover:text-white px-3 py-1.5 rounded-lg font-medium flex items-center gap-1.5 transition cursor-pointer">
+                            <i class="fa-solid fa-arrows-rotate"></i> Sincronizar BCV Ahora
+                        </button>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                        <div>
+                            <label class="block text-[11px] font-medium text-amber-300 mb-1">🇪🇺 EUR BCV (Bs)</label>
+                            <input type="number" step="0.01" id="cfgEurRate" class="w-full bg-wa-inputBg border border-wa-border rounded-xl px-3 py-2 text-wa-textPrimary text-xs font-semibold focus:outline-none focus:border-wa-accent">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-medium text-emerald-300 mb-1">🇺🇸 USD BCV (Bs)</label>
+                            <input type="number" step="0.01" id="cfgUsdRate" class="w-full bg-wa-inputBg border border-wa-border rounded-xl px-3 py-2 text-wa-textPrimary text-xs font-semibold focus:outline-none focus:border-wa-accent">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-medium text-wa-textSecondary mb-1">Moneda Base</label>
+                            <select id="cfgBaseCurrency" class="w-full bg-wa-inputBg border border-wa-border rounded-xl px-2.5 py-2 text-wa-textPrimary text-xs font-medium focus:outline-none focus:border-wa-accent">
+                                <option value="EUR">Euro BCV (EUR)</option>
+                                <option value="USD">Dólar BCV (USD)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Prueba de Audio y Selección de Voz -->
+                <div class="p-4 rounded-xl bg-wa-bg border border-wa-border space-y-2">
+                    <label class="font-semibold text-wa-textPrimary flex items-center gap-2">
+                        <i class="fa-solid fa-microphone-lines text-wa-accent"></i> Configuración de Voz del Asesor
+                    </label>
+                    <select id="cfgVoiceSelect" class="w-full bg-wa-inputBg border border-wa-border rounded-xl px-3 py-2 text-wa-textPrimary text-xs focus:outline-none focus:border-wa-accent"></select>
+                    <button type="button" onclick="window.appTestVoice()" class="mt-1 py-1.5 px-3 rounded-lg bg-wa-accent/20 hover:bg-wa-accent text-wa-accent hover:text-white text-xs font-semibold transition cursor-pointer">
+                        <i class="fa-solid fa-play mr-1"></i> Probar Sonido de Voz
+                    </button>
+                </div>
+
+                <!-- Dirección e Imagen de Referencia -->
+                <div class="p-4 rounded-xl bg-wa-bg border border-wa-border space-y-2.5">
+                    <label class="font-semibold text-wa-textPrimary flex items-center gap-2">
+                        <i class="fa-solid fa-location-dot text-rose-400"></i> Dirección e Imagen de Tienda
+                    </label>
+                    <div>
+                        <label class="block text-[11px] font-medium text-wa-textSecondary mb-1">Dirección</label>
+                        <input type="text" id="cfgAddress" placeholder="Ej. Plaza Venezuela, Av. Principal..." class="w-full bg-wa-inputBg border border-wa-border rounded-xl px-3.5 py-2 text-wa-textPrimary text-xs focus:outline-none focus:border-wa-accent">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-medium text-wa-textSecondary mb-1">URL de Imagen de Dirección (Opcional)</label>
+                        <input type="url" id="cfgAddressImageUrl" placeholder="https://ejemplo.com/croquis-o-fachada.jpg" class="w-full bg-wa-inputBg border border-wa-border rounded-xl px-3.5 py-2 text-wa-textPrimary text-xs focus:outline-none focus:border-wa-accent">
+                    </div>
+                </div>
+
+                <!-- Importar Catálogo -->
+                <div class="p-4 rounded-xl bg-wa-bg border border-wa-border space-y-2">
+                    <label class="font-semibold text-wa-textPrimary flex items-center gap-2">
+                        <i class="fa-solid fa-file-lines text-wa-accent"></i> Importar Catálogo CSV / TXT
+                    </label>
+                    <p class="text-xs text-wa-textSecondary">Sube tu archivo con formato: <code>Codigo,Descripcion,Precio_2</code></p>
+                    <input type="file" id="modalCatalogFileInput" accept=".txt,.csv" class="hidden" onchange="window.appHandleCatalogUpload(event)">
+                    <div class="flex items-center gap-2 pt-1">
+                        <button type="button" onclick="document.getElementById('modalCatalogFileInput').click()" class="py-2 px-4 rounded-xl bg-wa-accent/20 hover:bg-wa-accent text-wa-accent hover:text-white text-xs font-semibold transition flex items-center gap-2 cursor-pointer">
+                            <i class="fa-solid fa-upload"></i> Subir Archivo
+                        </button>
+                        <button type="button" onclick="window.appClearCatalog()" class="py-2 px-3 rounded-xl bg-rose-500/15 hover:bg-rose-500/25 text-rose-400 text-xs font-medium transition cursor-pointer">
+                            Restaurar Base
+                        </button>
+                    </div>
+                    <div id="modalCatalogStats" class="text-xs text-emerald-400 font-medium pt-1"></div>
+                </div>
+            </div>
+
+            <div class="bg-wa-header px-5 py-3.5 border-t border-wa-border flex items-center justify-between">
+                <button type="button" onclick="window.appResetConfig()" class="px-3 py-2 rounded-xl text-xs font-medium text-rose-400 hover:bg-rose-500/15 transition cursor-pointer">Restaurar Config.</button>
+                <div class="flex items-center gap-2">
+                    <button type="button" onclick="window.appCloseSettingsModal()" class="px-4 py-2 rounded-xl text-xs font-medium text-wa-textSecondary hover:bg-wa-hover transition cursor-pointer">Cancelar</button>
+                    <button type="button" onclick="window.appSaveSettings()" class="px-5 py-2 rounded-xl text-xs font-semibold bg-wa-accent hover:bg-wa-accentHover text-white transition shadow-md cursor-pointer">Guardar Cambios</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast de Notificación -->
+    <div id="toastNotification" class="fixed bottom-20 left-1/2 -translate-x-1/2 z-50 bg-wa-header text-wa-textPrimary border border-wa-accent/50 px-4 py-2.5 rounded-full shadow-2xl text-xs font-medium flex items-center gap-2 pointer-events-none transition-opacity duration-300 opacity-0">
+        <i class="fa-solid fa-circle-check text-wa-accent"></i>
+        <span id="toastMessage">Añadido al cotizador</span>
+    </div>
+
+    <!-- Lógica Principal Separada -->
+    <script src="./app.js"></script>
+</body>
+</html>
